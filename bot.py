@@ -13,10 +13,23 @@ chrome_options = Options()
 chrome_options.add_argument("--headless")  # Executa sem interface gráfica
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
-chrome_options.binary_location = "/usr/bin/chromium"  # Caminho do Chrome no Railway
+chrome_options.binary_location = "/usr/bin/google-chrome"  # Caminho do Chrome no Railway
 
 # Caminho do Chromedriver no Railway
 chromedriver_path = "/usr/bin/chromedriver"
+
+# Função para inicializar o WebDriver
+def iniciar_driver():
+    try:
+        service = Service(chromedriver_path)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        print("✅ ChromeDriver iniciado com sucesso!")
+        return driver
+    except Exception as e:
+        print(f"❌ Erro ao iniciar o ChromeDriver: {str(e)}")
+        return None
+
+
 
 # Função para inicializar o WebDriver
 def iniciar_driver():
