@@ -12,7 +12,7 @@ chrome_options = Options()
 chrome_options.add_argument("--headless")  # Executa sem interface gráfica
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
-chrome_options.binary_location = "/usr/bin/chromium"  # Caminho do Chrome
+chrome_options.binary_location = "/usr/bin/chromium"  # Caminho do Chrome no Railway
 
 # Caminho do Chromedriver no Railway
 chromedriver_path = "/usr/bin/chromedriver"
@@ -39,7 +39,7 @@ def enviar_lembrete():
                 # Buscar o grupo
                 search_box = driver.find_element(By.XPATH, "//div[@title='Pesquisar ou começar uma nova conversa']")
                 search_box.click()
-                search_box.send_keys("Nome do Grupo do WhatsApp")
+                search_box.send_keys("Nome do Grupo do WhatsApp")  # Substitua pelo nome do grupo
                 time.sleep(2)
                 search_box.send_keys(Keys.ENTER)
 
