@@ -31,17 +31,6 @@ def iniciar_driver():
 
 
 
-# Função para inicializar o WebDriver
-def iniciar_driver():
-    try:
-        service = Service(chromedriver_path)
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-        print("✅ ChromeDriver iniciado com sucesso!")
-        return driver
-    except Exception as e:
-        print(f"❌ Erro ao iniciar o ChromeDriver: {str(e)}")
-        return None
-
 # Função para enviar mensagens no WhatsApp
 def enviar_mensagem_whatsapp(driver, mensagem, nome_grupo):
     try:
