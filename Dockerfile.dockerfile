@@ -1,3 +1,4 @@
+# Usar uma imagem base do Python
 FROM python:3.12-slim
 
 # Atualizar pacotes e instalar Chrome e dependências
