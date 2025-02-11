@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-# Atualizar pacotes e instalar dependências do Chrome
+# Atualizar pacotes e instalar Chrome e dependências
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
@@ -13,14 +13,14 @@ RUN apt-get update && apt-get install -y \
     libfontconfig1 \
     && apt-get clean
 
-# Definir o diretório de trabalho
+# Definir diretório de trabalho
 WORKDIR /app
 
-# Copiar os arquivos do projeto
+# Copiar arquivos do projeto
 COPY . /app
 
 # Instalar dependências do Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Definir o comando para iniciar o bot
+# Definir comando para rodar o bot
 CMD ["python", "bot.py"]

@@ -1,5 +1,12 @@
 [
-    {"nomes": "João e Maria", "data": "11-02"},
-    {"nomes": "Carlos e Ana", "data": "15-03"},
-    {"nomes": "Pedro e Carla", "data": "22-06"}
+    {
+        "nome1": "Carlos",
+        "nome2": "Ana",
+        "data": "11-02"
+    },
+    {
+        "nome1": "Pedro",
+        "nome2": "Mariana",
+        "data": "20-05"
+    }
 ]
