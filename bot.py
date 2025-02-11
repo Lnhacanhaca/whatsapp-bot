@@ -2,35 +2,27 @@ import time
 import json
 import datetime
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
 
-# Configuração do Chrome Headless para Railway
+# Configuração do Chrome Headless
 chrome_options = Options()
 chrome_options.add_argument("--headless")  # Executa sem interface gráfica
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
-chrome_options.binary_location = "/usr/bin/google-chrome"  # Caminho do Chrome no Railway
 
-# Caminho do Chromedriver no Railway
-chromedriver_path = "/usr/bin/chromedriver"
+# Iniciar o WebDriver (Selenium Manager gerencia o ChromeDriver automaticamente)
+driver = webdriver.Chrome(options=chrome_options)
+print("✅ ChromeDriver iniciado com sucesso!")
 
-# Função para inicializar o WebDriver
-def iniciar_driver():
-    try:
-        service = Service(chromedriver_path)
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-        print("✅ ChromeDriver iniciado com sucesso!")
-        return driver
-    except Exception as e:
-        print(f"❌ Erro ao iniciar o ChromeDriver: {str(e)}")
-        return None
+# Ler os casais do arquivo JSON
+with open("casais.json", "r", encoding="utf-8") as file:
+    casais = json.load(file)
 
 # Função para enviar mensagens no WhatsApp
-def enviar_mensagem_whatsapp(driver, mensagem, nome_grupo):
+def enviar_mensagem_whatsapp(mensagem, nome_grupo):
     try:
         print("🔍 Acessando o WhatsApp Web...")
         driver.get("https://web.whatsapp.com")
@@ -58,19 +50,16 @@ def enviar_mensagem_whatsapp(driver, mensagem, nome_grupo):
         print(f"❌ Erro inesperado: {str(e)}")
 
 # Função principal para verificar aniversários e enviar mensagens
-def enviar_lembrete(driver):
+def enviar_lembrete():
     try:
         print("📅 Verificando aniversários de casamento...")
         hoje = datetime.datetime.now().strftime("%d-%m")  # Formato DD-MM
-
-        with open("casais.json", "r", encoding="utf-8") as file:
-            casais = json.load(file)
 
         for casal in casais:
             if casal["data"] == hoje:
                 mensagem = f"🎉 Parabéns {casal['nome1']} e {casal['nome2']} pelo seu aniversário de casamento! 🎊"
                 print(f"💌 Preparando mensagem para {casal['nome1']} e {casal['nome2']}...")
-                enviar_mensagem_whatsapp(driver, mensagem, "Nome do Grupo do WhatsApp")  # Substitua pelo nome do grupo
+                enviar_mensagem_whatsapp(mensagem, "Nome do Grupo do WhatsApp")  # Substitua pelo nome do grupo
     except FileNotFoundError:
         print("❌ Arquivo 'casais.json' não encontrado.")
     except json.JSONDecodeError:
@@ -80,13 +69,9 @@ def enviar_lembrete(driver):
 
 # Loop principal do bot
 def main():
-    driver = iniciar_driver()
-    if not driver:
-        return
-
     try:
         while True:
-            enviar_lembrete(driver)
+            enviar_lembrete()
             print("⏳ Aguardando 24 horas para a próxima verificação...")
             time.sleep(86400)  # Espera 24 horas
     except KeyboardInterrupt:
