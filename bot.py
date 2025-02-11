@@ -29,8 +29,6 @@ def iniciar_driver():
         print(f"❌ Erro ao iniciar o ChromeDriver: {str(e)}")
         return None
 
-
-
 # Função para enviar mensagens no WhatsApp
 def enviar_mensagem_whatsapp(driver, mensagem, nome_grupo):
     try:
