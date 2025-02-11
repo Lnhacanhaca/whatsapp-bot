@@ -8,12 +8,39 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 
+
+
+
+# Caminho manual para o Chromedriver instalado no Railway
+chromedriver_path = "/usr/bin/chromedriver"
+
+# Iniciar o driver do Chrome
+service = Service(chromedriver_path)
+driver = webdriver.Chrome(service=service, options=chrome_options)
+
+# Teste para verificar se o Chrome está rodando corretamente
+driver.get("https://www.google.com")
+print("✅ Chrome Headless funcionando corretamente!")
+driver.quit()
+
 # Configuração do Chrome Headless
 chrome_options = Options()
-chrome_options.add_argument("--headless")  # Executa sem interface gráfica
+chrome_options.add_argument("--headless")  # Modo sem interface gráfica
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
-chrome_options.binary_location = "/usr/bin/chromium"  # Caminho para o Chromium no Railway
+chrome_options.binary_location = "/usr/bin/chromium"  # Caminho correto do Chrome
+
+# Caminho manual para o Chromedriver instalado no Railway
+chromedriver_path = "/usr/bin/chromedriver"
+
+# Iniciar o driver do Chrome
+service = Service(chromedriver_path)
+driver = webdriver.Chrome(service=service, options=chrome_options)
+
+# Teste para verificar se o Chrome está rodando corretamente
+driver.get("https://www.google.com")
+print("✅ Chrome Headless funcionando corretamente!")
+driver.quit()
 
 # Carregar lista de casais e aniversários do arquivo JSON
 with open("casais.json", "r", encoding="utf-8") as file:
