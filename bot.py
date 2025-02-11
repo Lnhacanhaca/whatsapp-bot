@@ -1,52 +1,68 @@
-import datetime
-import json
 import time
+import json
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 
-# Função para carregar aniversários do JSON
-def get_today_anniversaries():
-    with open("casais.json", "r", encoding="utf-8") as file:
-        casais = json.load(file)
+# Configuração do Chrome Headless
+chrome_options = Options()
+chrome_options.add_argument("--headless")  # Executa sem interface gráfica
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.binary_location = "/usr/bin/chromium"  # Caminho para o Chromium no Railway
 
-    hoje = datetime.datetime.today().strftime("%d/%m")  # Formato DD/MM
-    aniversariantes = [casal["nome"] for casal in casais if casal["data"][:5] == hoje]
+# Carregar lista de casais e aniversários do arquivo JSON
+with open("casais.json", "r", encoding="utf-8") as file:
+    casais = json.load(file)
 
-    return aniversariantes
+# Nome do grupo do WhatsApp onde a mensagem será enviada
+WHATSAPP_GROUP = "Grupo da Família"  # 🔴 ALTERE para o nome exato do grupo no WhatsApp
 
-# Configuração do ChromeDriver para WhatsApp Web
-service = Service(ChromeDriverManager().install())
-options = webdriver.ChromeOptions()
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
+# Função para enviar mensagem no WhatsApp Web
+def enviar_mensagem(mensagem):
+    try:
+        # Inicia o navegador
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        driver.get("https://web.whatsapp.com")
 
-# Iniciar navegador
-driver = webdriver.Chrome(service=service, options=options)
-driver.get("https://web.whatsapp.com")
-time.sleep(15)  # Tempo para escanear QR Code na primeira vez
+        # Aguarda o usuário escanear o QR Code
+        input("🔹 Escaneie o QR Code e pressione Enter para continuar...")
 
-# Verificar aniversários e enviar mensagem no WhatsApp
-aniversariantes = get_today_anniversaries()
+        # Buscar o grupo no WhatsApp
+        search_box = driver.find_element(By.XPATH, "//div[@title='Pesquisar ou começar uma nova conversa']")
+        search_box.click()
+        search_box.send_keys(WHATSAPP_GROUP)
+        time.sleep(2)  # Aguarde o carregamento
 
-if aniversariantes:
-    grupo = "Grupo da Família"  # Substitua pelo nome real do grupo no WhatsApp
-    mensagem = f"🎉 Hoje é o aniversário de casamento de {', '.join(aniversariantes)}! Parabéns! ❤️🎊"
+        # Seleciona o grupo
+        group = driver.find_element(By.XPATH, f"//span[@title='{WHATSAPP_GROUP}']")
+        group.click()
 
-    # Buscar o grupo no WhatsApp
-    search_box = driver.find_element(By.XPATH, "//div[@title='Pesquisar ou começar uma nova conversa']")
-    search_box.send_keys(grupo)
-    search_box.send_keys(Keys.ENTER)
-    time.sleep(2)
+        # Envia a mensagem
+        message_box = driver.find_element(By.XPATH, "//div[@contenteditable='true']")
+        message_box.send_keys(mensagem)
+        message_box.send_keys(Keys.RETURN)  # Pressiona "Enter"
+        print(f"✅ Mensagem enviada para o grupo: {WHATSAPP_GROUP}")
 
-    # Enviar mensagem no grupo
-    campo_mensagem = driver.find_element(By.XPATH, "//div[@title='Mensagem']")
-    campo_mensagem.send_keys(mensagem)
-    campo_mensagem.send_keys(Keys.ENTER)
-    time.sleep(2)
+    except Exception as e:
+        print(f"❌ Erro ao enviar mensagem: {e}")
+    finally:
+        driver.quit()
 
-# Fechar navegador
-driver.quit()
+# Função para verificar aniversários e enviar mensagens
+def verificar_aniversarios():
+    hoje = datetime.today().strftime("%d-%m")  # Formato "dia-mês"
+    for casal in casais:
+        if casal["data"] == hoje:
+            mensagem = f"🎉 Parabéns {casal['nomes']} pelo aniversário de casamento! 🥂🎊"
+            enviar_mensagem(mensagem)
+
+# Loop diário para verificar aniversários e enviar mensagens
+while True:
+    verificar_aniversarios()
+    time.sleep(86400)  # Espera 24 horas antes de verificar novamente
